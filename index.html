@@ -148,7 +148,7 @@
     let allRows = [], charts = {};
     function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
-    function makeBar(id, labels, data, colors, horizontal, showLabels, maxVal) {
+    function makeBar(id, labels, data, colors, horizontal, showLabels, maxVal, totalForPct) {
       destroyChart(id);
       const ctx = document.getElementById(id); if (!ctx) return;
       charts[id] = new Chart(ctx, {
@@ -156,10 +156,10 @@
         data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, borderSkipped: false }] },
         options: {
           indexAxis: horizontal ? 'y' : 'x', responsive: true, maintainAspectRatio: false,
-          layout: { padding: { right: horizontal && showLabels ? 45 : 0, top: !horizontal && showLabels ? 20 : 0 } },
+          layout: { padding: { right: horizontal && showLabels ? 55 : 0, top: !horizontal && showLabels ? 20 : 0 } },
           plugins: {
             legend: { display: false },
-            datalabels: showLabels ? { anchor: 'end', align: horizontal ? 'end' : 'top', color: '#444', font: { size: 11, family: 'Figtree', weight: '600' }, formatter: (v) => horizontal ? (Number.isInteger(v) ? v : v.toFixed(1)) : v } : false
+            datalabels: showLabels ? { anchor: 'end', align: horizontal ? 'end' : 'top', color: '#444', font: { size: 11, family: 'Figtree', weight: '600' }, formatter: (v) => { if (totalForPct) return Math.round(v / totalForPct * 100) + '%'; return horizontal ? (Number.isInteger(v) ? v : v.toFixed(1)) : v; } } : false
           },
           scales: {
             x: { ticks: { color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true, max: maxVal || undefined },
@@ -216,7 +216,7 @@
       document.getElementById('kpiTopPct').textContent = topProd ? `${Math.round(topProd[1]/total*100)}% de los votos` : '';
       renderGender(count(generos), total);
       const edadE = Object.entries(count(edades)).sort((a,b)=>a[0].localeCompare(b[0]));
-      makeBar('cEdad', edadE.map(e=>e[0]), edadE.map(e=>e[1]), edadE.map(()=>RED), false, true, null);
+      makeBar('cEdad', edadE.map(e=>e[0]), edadE.map(e=>e[1]), edadE.map(()=>RED), false, true, null, total);
       const prodE = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
       makeBar('cProductos', prodE.map(e=>e[0]), prodE.map(e=>e[1]), prodE.map((_,i)=>PALETTE[Math.min(i,PALETTE.length-1)]), true, false, null);
       const scoreE = Object.entries(avgByGroup(scores, productos)).sort((a,b)=>b[1]-a[1]);
@@ -224,7 +224,7 @@
       const razonCount = new Array(RAZONES_KEYS.length).fill(0);
       razones.forEach(r => { const idx = matchRazon(r); if (idx !== null) razonCount[idx]++; });
       const razonPairs = RAZONES_LABELS.map((l, i) => ({ label: l, count: razonCount[i] })).sort((a,b) => b.count - a.count);
-      makeBar('cRazones', razonPairs.map(p=>p.label), razonPairs.map(p=>p.count), razonPairs.map((_,i)=>R_PALETTE[Math.min(i,R_PALETTE.length-1)]), true, true, null);
+      makeBar('cRazones', razonPairs.map(p=>p.label), razonPairs.map(p=>p.count), razonPairs.map((_,i)=>R_PALETTE[Math.min(i,R_PALETTE.length-1)]), true, true, null, total);
       const now = new Date();
       document.getElementById('lastUpdate').textContent = `Actualizado: ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
       document.getElementById('footerInfo').textContent = `Última actualización ${now.toLocaleTimeString('es-ES')} · se refresca cada 10 s`;
