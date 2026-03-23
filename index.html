@@ -125,7 +125,7 @@
 
     <div class="charts-grid">
       <div class="card"><div class="card-title">Top 10 productos más elegidos</div><div class="chart-wrap tall"><canvas id="cProductos"></canvas></div></div>
-      <div class="card"><div class="card-title">Ranking de Innovación</div><div class="chart-wrap tall"><canvas id="cScore"></canvas></div></div>
+      <div class="card"><div class="card-title">Puntuación media por producto</div><div class="chart-wrap tall"><canvas id="cScore"></canvas></div></div>
       <div class="card full"><div class="card-title">Razones de elección</div><div class="chart-wrap reasons"><canvas id="cRazones"></canvas></div></div>
     </div>
 
@@ -148,7 +148,8 @@
     let allRows = [], charts = {};
     function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
-    function makeBar(id, labels, data, colors, horizontal, showLabels, maxVal, totalForPct) {
+    function makeBar(id, labels, data, colors, horizontal, showLabels, maxVal, totalForPct, opts) {
+      opts = opts || {};
       destroyChart(id);
       const ctx = document.getElementById(id); if (!ctx) return;
       charts[id] = new Chart(ctx, {
@@ -162,8 +163,8 @@
             datalabels: showLabels ? { anchor: 'end', align: horizontal ? 'end' : 'top', color: '#444', font: { size: 11, family: 'Figtree', weight: '600' }, formatter: (v) => { if (totalForPct) return Math.round(v / totalForPct * 100) + '%'; return horizontal ? (Number.isInteger(v) ? v : v.toFixed(1)) : v; } } : false
           },
           scales: {
-            x: { ticks: { color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true, max: maxVal || undefined },
-            y: { ticks: { color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true }
+            x: { display: !opts.hideX, ticks: { color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true, max: maxVal || undefined },
+            y: { ticks: { display: !opts.hideYTicks, color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true }
           }
         },
         plugins: showLabels ? [ChartDataLabels] : []
@@ -216,9 +217,9 @@
       document.getElementById('kpiTopPct').textContent = topProd ? `${Math.round(topProd[1]/total*100)}% de los votos` : '';
       renderGender(count(generos), total);
       const edadE = Object.entries(count(edades)).sort((a,b)=>a[0].localeCompare(b[0]));
-      makeBar('cEdad', edadE.map(e=>e[0]), edadE.map(e=>e[1]), edadE.map(()=>RED), false, true, null, total);
+      makeBar('cEdad', edadE.map(e=>e[0]), edadE.map(e=>e[1]), edadE.map(()=>RED), false, true, null, total, {hideYTicks: true});
       const prodE = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-      makeBar('cProductos', prodE.map(e=>e[0]), prodE.map(e=>e[1]), prodE.map((_,i)=>PALETTE[Math.min(i,PALETTE.length-1)]), true, false, null);
+      makeBar('cProductos', prodE.map(e=>e[0]), prodE.map(e=>e[1]), prodE.map((_,i)=>PALETTE[Math.min(i,PALETTE.length-1)]), true, true, null, total, {hideX: true});
       const scoreE = Object.entries(avgByGroup(scores, productos)).sort((a,b)=>b[1]-a[1]);
       makeBar('cScore', scoreE.map(e=>e[0]), scoreE.map(e=>parseFloat(e[1].toFixed(1))), scoreE.map((_,i)=>PALETTE[Math.min(i,PALETTE.length-1)]), true, true, 10);
       const razonCount = new Array(RAZONES_KEYS.length).fill(0);
