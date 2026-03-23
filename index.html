@@ -129,7 +129,7 @@
       <div class="card full"><div class="card-title">Razones de elección</div><div class="chart-wrap reasons"><canvas id="cRazones"></canvas></div></div>
     </div>
 
-    <div class="footer" id="footerInfo">Actualizando cada 10 segundos</div>
+    <div class="footer" id="footerInfo">Actualizando cada 30 segundos</div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -252,7 +252,7 @@
 
     document.getElementById('filterSelect').addEventListener('change', updateFilter);
     fetchData();
-    setInterval(fetchData, 10000);
+    setInterval(fetchData, 30000);
   </script>
 </body>
 </html>
