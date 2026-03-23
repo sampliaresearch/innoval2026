@@ -228,7 +228,7 @@
       makeBar('cRazones', razonPairs.map(p=>p.label), razonPairs.map(p=>p.count), razonPairs.map((_,i)=>R_PALETTE[Math.min(i,R_PALETTE.length-1)]), true, true, null, total);
       const now = new Date();
       document.getElementById('lastUpdate').textContent = `Actualizado: ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
-      document.getElementById('footerInfo').textContent = `Última actualización ${now.toLocaleTimeString('es-ES')} · se refresca cada 10 s`;
+      document.getElementById('footerInfo').textContent = `Última actualización ${now.toLocaleTimeString('es-ES')} · se refresca cada 30 s`;
     }
 
     function updateFilter() {
