@@ -1,258 +1,44 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Innoval 2026 Alimentaria — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --s-red: #E8001D; --s-red-dark: #B8001A; --s-red-light: #FDEDEF;
-      --s-black: #1A1A1A; --s-gray: #6B6B6B; --s-gray-light: #F5F5F5;
-      --s-border: #EBEBEB; --s-white: #FFFFFF; --radius: 12px; --radius-sm: 8px;
-    }
-    body { font-family: 'Figtree', sans-serif; background: var(--s-gray-light); min-height: 100vh; padding: 0 0 2rem; }
-    .header { background: var(--s-white); border-bottom: 1px solid var(--s-border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 10; }
-    .logo img { height: 28px; width: auto; display: block; }
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .live-pill { display: flex; align-items: center; gap: 5px; background: var(--s-red-light); color: var(--s-red-dark); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--s-red); animation: blink 1.4s infinite; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-    .last-update { font-size: 11px; color: var(--s-gray); }
-    .title-bar { background: var(--s-red); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-    .title-bar h1 { color: #fff; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-    .title-bar p { color: rgba(255,255,255,0.75); font-size: 12px; }
-    .content { padding: 1.25rem 1.25rem 0; max-width: 1100px; margin: 0 auto; }
-    .filter-bar { background: var(--s-white); border: 1px solid var(--s-border); border-radius: var(--radius); padding: 0.75rem 1.25rem; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .filter-label { font-size: 12px; font-weight: 600; color: var(--s-gray); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-    .filter-select { font-family: 'Figtree', sans-serif; font-size: 13px; font-weight: 500; color: var(--s-black); background: var(--s-gray-light); border: 1px solid var(--s-border); border-radius: var(--radius-sm); padding: 6px 32px 6px 10px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B6B6B' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; cursor: pointer; min-width: 200px; flex: 1; max-width: 360px; }
-    .filter-select:focus { outline: none; border-color: var(--s-red); }
-    .filter-badge { font-size: 11px; font-weight: 600; color: var(--s-red-dark); background: var(--s-red-light); padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
-    .kpi-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
-    .kpi { background: var(--s-white); border: 1px solid var(--s-border); border-radius: var(--radius); padding: 1rem 1.25rem; position: relative; overflow: hidden; }
-    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--s-red); }
-    .kpi-label { font-size: 11px; font-weight: 600; color: var(--s-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .kpi-value { font-size: 32px; font-weight: 900; color: var(--s-black); line-height: 1; letter-spacing: -1px; }
-    .kpi-sub { font-size: 12px; color: var(--s-gray); margin-top: 4px; }
-    .kpi-top-val { font-size: 15px; font-weight: 700; color: var(--s-black); margin-top: 4px; line-height: 1.2; }
-    .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .card { background: var(--s-white); border: 1px solid var(--s-border); border-radius: var(--radius); padding: 1rem 1.25rem; }
-    .card.full { grid-column: 1 / -1; }
-    .card-title { font-size: 12px; font-weight: 600; color: var(--s-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 6px; }
-    .card-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background: var(--s-red); border-radius: 2px; flex-shrink: 0; }
-    .chart-wrap { position: relative; width: 100%; height: 190px; }
-    .chart-wrap.sm { height: 200px; }
-    .chart-wrap.tall { height: 420px; }
-    .chart-wrap.reasons { height: 340px; }
-    .gender-donut-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 12px; }
-    .donut-container { position: relative; width: 140px; height: 140px; }
-    .donut-container canvas { position: absolute; top: 0; left: 0; }
-    .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
-    .donut-pct { font-size: 26px; font-weight: 900; color: #1A1A1A; line-height: 1; }
-    .donut-label { font-size: 10px; color: #6B6B6B; margin-top: 2px; }
-    .gender-legend { display: flex; gap: 16px; }
-    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .no-data { color: var(--s-gray); font-size: 13px; text-align: center; padding: 2rem 0; }
-    .footer { text-align: center; font-size: 11px; color: var(--s-gray); margin-top: 1rem; }
-    @media (max-width: 640px) {
-      .kpi-row { grid-template-columns: 1fr 1fr; }
-      .kpi:last-child { grid-column: 1 / -1; }
-      .kpi-value { font-size: 26px; }
-      .demo-row, .charts-grid { grid-template-columns: 1fr; }
-      .card.full { grid-column: 1; }
-      .header { padding: 0 1rem; }
-      .title-bar { padding: 0.85rem 1rem; }
-      .content { padding: 1rem 1rem 0; }
-      .last-update { display: none; }
-      .logo img { height: 24px; }
-      .chart-wrap.tall, .chart-wrap.reasons { height: 300px; }
-      .filter-select { max-width: 100%; }
-    }
-    @media (max-width: 400px) {
-      .kpi-row { grid-template-columns: 1fr; }
-      .kpi:last-child { grid-column: 1; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #333;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <div class="logo">
-      <img src="https://samplia.com/assets/img/Samplia.svg" alt="Samplia" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-      <span style="display:none;font-family:Figtree,sans-serif;font-size:20px;font-weight:900;color:#1A1A1A;letter-spacing:-0.5px;">sam<span style="color:#E8001D;">plia</span></span>
-    </div>
-    <div class="header-right">
-      <div class="live-pill"><div class="live-dot"></div>En vivo</div>
-      <span class="last-update" id="lastUpdate">Cargando...</span>
-    </div>
-  </div>
+    <h1>Welcome to Innoval 2026</h1>
+    <button id="toggle-dark-mode">Toggle Dark Mode</button>
+    <div id="heatmap" style="height: 400px;"></div>
+    <script>
+        document.getElementById('toggle-dark-mode').onclick = function() {
+            document.body.classList.toggle('dark-mode');
+        };
 
-  <div class="title-bar">
-    <h1>Innoval 2026 Alimentaria</h1>
-    <p>Resultados en tiempo real</p>
-  </div>
+        // Example of a heatmap visualization
+        const heatmapData = {};
+        const responseCountsByHour = {}; // Should be filled with data from the server
 
-  <div class="content" style="margin-top:1.25rem;">
-    <div class="filter-bar">
-      <span class="filter-label">Filtrar por producto</span>
-      <select class="filter-select" id="filterSelect">
-        <option value="">Todos los productos</option>
-      </select>
-      <span class="filter-badge" id="filterBadge"></span>
-    </div>
+        function renderHeatmap() {
+            // Heatmap rendering logic here, using a library like Chart.js or D3.js
+        }
 
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-label">Respuestas</div><div class="kpi-value" id="kpiTotal">—</div><div class="kpi-sub">participantes</div></div>
-      <div class="kpi"><div class="kpi-label">Puntuación media</div><div class="kpi-value" id="kpiAvg">—</div><div class="kpi-sub">innovación (escala 1–10)</div></div>
-      <div class="kpi"><div class="kpi-label">Producto más elegido</div><div class="kpi-top-val" id="kpiTop">—</div><div class="kpi-sub" id="kpiTopPct"></div></div>
-    </div>
-
-    <div class="demo-row">
-      <div class="card">
-        <div class="card-title">Género</div>
-        <div class="gender-donut-wrap">
-          <div class="donut-container">
-            <canvas id="cGenero" width="140" height="140"></canvas>
-            <div class="donut-center"><div class="donut-pct" id="genPct">—</div><div class="donut-label">Femenino</div></div>
-          </div>
-          <div class="gender-legend" id="genderLegend"></div>
-        </div>
-      </div>
-      <div class="card"><div class="card-title">Rango de edad</div><div class="chart-wrap sm"><canvas id="cEdad"></canvas></div></div>
-    </div>
-
-    <div class="charts-grid">
-      <div class="card"><div class="card-title">Top 10 productos más elegidos</div><div class="chart-wrap tall"><canvas id="cProductos"></canvas></div></div>
-      <div class="card"><div class="card-title">Puntuación media por producto</div><div class="chart-wrap tall"><canvas id="cScore"></canvas></div></div>
-      <div class="card full"><div class="card-title">Razones de elección</div><div class="chart-wrap reasons"><canvas id="cRazones"></canvas></div></div>
-    </div>
-
-    <div class="footer" id="footerInfo">Actualizando cada 30 segundos</div>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
-  <script>
-    const SHEET_ID = '1iyvMOoRY0Gt6XLFIAtRaVQCyM8-2RneRc7Q5P8JP4A0';
-    const GID = '675720663';
-    const GURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
-    const RED = '#E8001D', BLUE = '#1F3A5F', MID = '#888888';
-    const PALETTE = [RED,'#F05070','#F59090','#FAC0C0','#FDE0E0','#CCCCCC','#B0B0B0','#909090','#707070','#505050'];
-    const R_PALETTE = ['#E8001D','#EC2535','#F04A4D','#F46F65','#F7907D','#F9AA96','#FAC0AF','#FBD2C8','#FCE3DF','#FEF0EF'];
-
-    const RAZONES_KEYS = ['Diseño/Estética','La forma de consumirlo','Tecnología utilizada','Sostenibilidad','Mejora la experiencia','Valores nutricionales','Marca transmite confianza','Consumo habitualmente','Despertó mi curiosidad','Sabores en tendencia'];
-    const RAZONES_LABELS = ['Diseño / Estética','Forma de consumirlo','Tecnología de producción','Sostenibilidad / Packaging','Experiencia de usuario (UX)','Valores nutricionales','Marca confianza / calidad','Consumo habitual','Despertó curiosidad','Sabores en tendencia'];
-
-    let allRows = [], charts = {};
-    function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
-
-    function makeBar(id, labels, data, colors, horizontal, showLabels, maxVal, totalForPct, opts) {
-      opts = opts || {};
-      destroyChart(id);
-      const ctx = document.getElementById(id); if (!ctx) return;
-      charts[id] = new Chart(ctx, {
-        type: 'bar',
-        data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, borderSkipped: false }] },
-        options: {
-          indexAxis: horizontal ? 'y' : 'x', responsive: true, maintainAspectRatio: false,
-          layout: { padding: { right: horizontal && showLabels ? 55 : 0, top: !horizontal && showLabels ? 20 : 0 } },
-          plugins: {
-            legend: { display: false },
-            datalabels: showLabels ? { anchor: 'end', align: horizontal ? 'end' : 'top', color: '#444', font: { size: 11, family: 'Figtree', weight: '600' }, formatter: (v) => { if (totalForPct) return Math.round(v / totalForPct * 100) + '%'; return horizontal ? (Number.isInteger(v) ? v : v.toFixed(1)) : v; } } : false
-          },
-          scales: {
-            x: { display: !opts.hideX, ticks: { color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true, max: maxVal || undefined },
-            y: { ticks: { display: !opts.hideYTicks, color: MID, font: { size: 10, family: 'Figtree' } }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true }
-          }
-        },
-        plugins: showLabels ? [ChartDataLabels] : []
-      });
-    }
-
-    function renderGender(genMap, total) {
-      const isFem = k => k.includes('femen') || k === 'f' || k === 'mujer';
-      const isMas = k => k.includes('mascul') || k === 'm' || k === 'hombre';
-      const entries = Object.entries(genMap);
-      let femCount = 0, masCount = 0, otherCount = 0;
-      entries.forEach(([k, v]) => { const kl = k.toLowerCase(); if (isFem(kl)) femCount += v; else if (isMas(kl)) masCount += v; else otherCount += v; });
-      const femPct = total > 0 ? Math.round(femCount / total * 100) : 0;
-      document.getElementById('genPct').textContent = femPct + '%';
-      const dataValues = [femCount, masCount], bgColors = [RED, BLUE], labels = ['Femenino', 'Masculino'];
-      if (otherCount > 0) { dataValues.push(otherCount); bgColors.push('#AAAAAA'); labels.push('Otro'); }
-      destroyChart('cGenero');
-      const ctx = document.getElementById('cGenero'); if (!ctx) return;
-      charts['cGenero'] = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#fff', borderWidth: 3, hoverOffset: 0 }] }, options: { responsive: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { enabled: true }, datalabels: false } } });
-      document.getElementById('genderLegend').innerHTML = labels.map((l, i) => { const pct = total > 0 ? Math.round(dataValues[i] / total * 100) : 0; return `<div class="legend-item"><div class="legend-dot" style="background:${bgColors[i]}"></div><span style="color:${bgColors[i]}">${l} ${pct}%</span></div>`; }).join('');
-    }
-
-    function matchRazon(resp) {
-      if (!resp) return null;
-      const r = resp.trim().toLowerCase();
-      for (let i = 0; i < RAZONES_KEYS.length; i++) {
-        const words = RAZONES_KEYS[i].toLowerCase().split(/[\s\/,]+/);
-        if (words.filter(w => w.length > 4).some(w => r.includes(w))) return i;
-      }
-      return null;
-    }
-
-    function count(arr) { const m = {}; arr.forEach(v => { if (v && v.trim()) m[v.trim()] = (m[v.trim()] || 0) + 1; }); return m; }
-    function avg(arr) { const ns = arr.map(Number).filter(n => !isNaN(n) && n > 0); return ns.length ? ns.reduce((a,b)=>a+b,0)/ns.length : 0; }
-    function avgByGroup(vals, groups) {
-      const m = {};
-      vals.forEach((v,i) => { const g = groups[i]&&groups[i].trim(); if(!g) return; if(!m[g]) m[g]=[]; const n=Number(v); if(!isNaN(n)&&n>0) m[g].push(n); });
-      const r = {}; Object.keys(m).forEach(k => { r[k]=m[k].reduce((a,b)=>a+b,0)/m[k].length; }); return r;
-    }
-    function topEntry(obj) { return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]; }
-    function parse(raw) { const json = JSON.parse(raw.replace(/^[^\{]+/,'').replace(/[^\}]+$/,'')); return json.table.rows.map(r => r.c.map(c => c ? (c.v ?? c.f ?? '') : '')); }
-
-    function renderDashboard(rows) {
-      if (!rows.length) { document.getElementById('kpiTotal').textContent = '0'; return; }
-      const generos=rows.map(r=>r[1]), edades=rows.map(r=>r[2]), productos=rows.map(r=>r[3]), scores=rows.map(r=>r[4]), razones=rows.map(r=>r[5]);
-      const total=rows.length, avgVal=avg(scores), prodMap=count(productos), topProd=topEntry(prodMap);
-      document.getElementById('kpiTotal').textContent = total;
-      document.getElementById('kpiAvg').textContent = avgVal > 0 ? avgVal.toFixed(1) : '—';
-      document.getElementById('kpiTop').textContent = topProd ? topProd[0] : '—';
-      document.getElementById('kpiTopPct').textContent = topProd ? `${Math.round(topProd[1]/total*100)}% de los votos` : '';
-      renderGender(count(generos), total);
-      const edadE = Object.entries(count(edades)).sort((a,b)=>a[0].localeCompare(b[0]));
-      makeBar('cEdad', edadE.map(e=>e[0]), edadE.map(e=>e[1]), edadE.map(()=>RED), false, true, null, total, {hideYTicks: true});
-      const prodE = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-      makeBar('cProductos', prodE.map(e=>e[0]), prodE.map(e=>e[1]), prodE.map((_,i)=>PALETTE[Math.min(i,PALETTE.length-1)]), true, true, null, total, {hideX: true});
-      const scoreE = Object.entries(avgByGroup(scores, productos)).sort((a,b)=>b[1]-a[1]);
-      makeBar('cScore', scoreE.map(e=>e[0]), scoreE.map(e=>parseFloat(e[1].toFixed(1))), scoreE.map((_,i)=>PALETTE[Math.min(i,PALETTE.length-1)]), true, true, 10);
-      const razonCount = new Array(RAZONES_KEYS.length).fill(0);
-      razones.forEach(r => { const idx = matchRazon(r); if (idx !== null) razonCount[idx]++; });
-      const razonPairs = RAZONES_LABELS.map((l, i) => ({ label: l, count: razonCount[i] })).sort((a,b) => b.count - a.count);
-      makeBar('cRazones', razonPairs.map(p=>p.label), razonPairs.map(p=>p.count), razonPairs.map((_,i)=>R_PALETTE[Math.min(i,R_PALETTE.length-1)]), true, true, null, total);
-      const now = new Date();
-      document.getElementById('lastUpdate').textContent = `Actualizado: ${now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
-      document.getElementById('footerInfo').textContent = `Última actualización ${now.toLocaleTimeString('es-ES')} · se refresca cada 30 s`;
-    }
-
-    function updateFilter() {
-      const val = document.getElementById('filterSelect').value;
-      const filtered = val ? allRows.filter(r => r[3] && r[3].trim() === val) : allRows;
-      document.getElementById('filterBadge').textContent = val ? `${filtered.length} respuesta${filtered.length !== 1 ? 's' : ''}` : '';
-      renderDashboard(filtered);
-    }
-
-    function populateFilter(rows) {
-      const sel = document.getElementById('filterSelect');
-      const current = sel.value;
-      const productos = [...new Set(rows.map(r => r[3]).filter(Boolean))].sort();
-      sel.innerHTML = '<option value="">Todos los productos</option>' + productos.map(p => `<option value="${p}"${p === current ? ' selected' : ''}>${p}</option>`).join('');
-    }
-
-    async function fetchData() {
-      try { const res = await fetch(GURL); allRows = parse(await res.text()); populateFilter(allRows); updateFilter(); }
-      catch(e) { document.getElementById('lastUpdate').textContent = 'Error de conexión'; }
-    }
-
-    document.getElementById('filterSelect').addEventListener('change', updateFilter);
-    fetchData();
-    setInterval(fetchData, 30000);
-  </script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error(`Error occurred: ${message} at ${source}:${lineno}:${colno}`);
+            alert('An error occurred. Please try again later.');
+        };
+    </script>
 </body>
 </html>
